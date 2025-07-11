@@ -17,31 +17,17 @@ class TapSearchStax(Tap):
     # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
+            "api_key",
             th.StringType(nullable=False),
             required=True,
             secret=True,  # Flag config as protected.
-            title="Auth Token",
-            description="The token to authenticate against the API service",
-        ),
-        th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType(nullable=False), nullable=False),
-            required=True,
-            title="Project IDs",
-            description="Project IDs to replicate",
+            title="API Key",
+            description="The API Key to authenticate against the API service",
         ),
         th.Property(
             "start_date",
             th.DateTimeType(nullable=True),
             description="The earliest record date to sync",
-        ),
-        th.Property(
-            "api_url",
-            th.StringType(nullable=False),
-            title="API URL",
-            default="https://api.mysample.com",
-            description="The url for the API service",
         ),
         th.Property(
             "user_agent",
@@ -61,7 +47,7 @@ class TapSearchStax(Tap):
         """
         return [
             streams.GroupsStream(self),
-            streams.UsersStream(self),
+            streams.AccountsStream(self),
         ]
 
 

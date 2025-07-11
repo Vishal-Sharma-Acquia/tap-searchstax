@@ -16,8 +16,6 @@ if t.TYPE_CHECKING:
     from singer_sdk.helpers.types import Context
 
 
-# TODO: Delete this is if not using json files for schema definition
-SCHEMAS_DIR = resources.files(__package__) / "schemas"
 
 
 class SearchStaxStream(RESTStream):
@@ -32,8 +30,7 @@ class SearchStaxStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        # TODO: hardcode a value here, or retrieve it from self.config
-        return "https://api.mysample.com"
+        return "https://app.searchstax.com/api/rest/experience-manager/v2"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -44,7 +41,7 @@ class SearchStaxStream(RESTStream):
         """
         return BearerTokenAuthenticator.create_for_stream(
             self,
-            token=self.config.get("auth_token", ""),
+            token=self.config.get("api_key", ""),
         )
 
     @property
