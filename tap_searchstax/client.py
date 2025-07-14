@@ -1,15 +1,18 @@
 """REST client handling, including SearchStaxStream base class."""
 
 from __future__ import annotations
-
+from auth import SearchStaxAuthenticator
+from urllib.parse import parse_qsl
 import decimal
 import typing as t
 from importlib import resources
-
-from singer_sdk.authenticators import BearerTokenAuthenticator
+from requests.auth import HTTPBasicAuth
+from singer_sdk.authenticators import BasicAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.pagination import BaseAPIPaginator  # noqa: TC002
+from singer_sdk.pagination import BaseHATEOASPaginator  # noqa: TC002
 from singer_sdk.streams import RESTStream
+
+from tap_searchstax.get_token import username, password
 
 if t.TYPE_CHECKING:
     import requests
@@ -30,19 +33,18 @@ class SearchStaxStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        return "https://app.searchstax.com/api/rest/experience-manager/v2"
+        return "https://app.searchstax.com/api/rest/v2/account"
 
     @property
-    def authenticator(self) -> BearerTokenAuthenticator:
+    def authenticator(self) -> SearchStaxAuthenticator:
         """Return a new authenticator object.
 
         Returns:
             An authenticator instance.
         """
-        return BearerTokenAuthenticator.create_for_stream(
-            self,
-            token=self.config.get("api_key", ""),
-        )
+        return SearchStaxAuthenticator.create_for_stream(self,
+                                                         self.config.get("user_name"),
+                                                         self.config.get("password"))
 
     @property
     def http_headers(self) -> dict:
@@ -53,9 +55,9 @@ class SearchStaxStream(RESTStream):
         """
         # If not using an authenticator, you may also provide inline auth headers:
         # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001
-        return {}
+        return self.authenticator.auth_credentials
 
-    def get_new_paginator(self) -> BaseAPIPaginator | None:
+    def get_new_paginator(self) -> SearchStaxHATEOASPaginator:
         """Create a new pagination helper instance.
 
         If the source API can make use of the `next_page_token_jsonpath`
@@ -87,30 +89,12 @@ class SearchStaxStream(RESTStream):
         """
         params: dict = {}
         if next_page_token:
-            params["page"] = next_page_token
+            params.update(parse_qsl(next_page_token.query))
         if self.replication_key:
             params["sort"] = "asc"
             params["order_by"] = self.replication_key
         return params
 
-    def prepare_request_payload(
-        self,
-        context: Context | None,  # noqa: ARG002
-        next_page_token: t.Any | None,  # noqa: ARG002, ANN401
-    ) -> dict | None:
-        """Prepare the data payload for the REST API request.
-
-        By default, no payload will be sent (return None).
-
-        Args:
-            context: The stream context.
-            next_page_token: The next page index or value.
-
-        Returns:
-            A dictionary with the JSON body for a POST requests.
-        """
-        # TODO: Delete this method if no payload is required. (Most REST APIs.)
-        return None
 
     def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
         """Parse the response and return an iterator of result records.
@@ -146,3 +130,8 @@ class SearchStaxStream(RESTStream):
         """
         # TODO: Delete this method if not needed.
         return row
+
+
+class SearchStaxHATEOASPaginator(BaseHATEOASPaginator):
+    def get_next_url(self, response):
+        return response.json().get("next")

@@ -17,12 +17,20 @@ class TapSearchStax(Tap):
     # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "api_key",
+            "user_name",
             th.StringType(nullable=False),
             required=True,
             secret=True,  # Flag config as protected.
-            title="API Key",
-            description="The API Key to authenticate against the API service",
+            title="User Name",
+            description="The User Name to authenticate against the API service",
+        ),
+        th.Property(
+            "password",
+            th.StringType(nullable=False),
+            required=True,
+            secret=True,  # Flag config as protected.
+            title="Password",
+            description="The Password to authenticate against the API service",
         ),
         th.Property(
             "start_date",

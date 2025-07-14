@@ -18,6 +18,8 @@ class AccountsStream(SearchStaxStream):
     path = "/account"
     primary_keys: t.ClassVar[list[str]] = ["name"]
     replication_key = None
+    next_page_token_jsonpath = "$.next"
+    records_jsonpath = "$.results[*]"
     schema = th.PropertiesList(
         th.Property("name", th.StringType),
         th.Property("trial", th.BooleanType),
