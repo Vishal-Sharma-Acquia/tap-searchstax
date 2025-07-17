@@ -1,18 +1,14 @@
 """REST client handling, including SearchStaxStream base class."""
 
 from __future__ import annotations
-from auth import SearchStaxAuthenticator
+from tap_searchstax.auth import SearchStaxAuthenticator
 from urllib.parse import parse_qsl
 import decimal
 import typing as t
-from importlib import resources
-from requests.auth import HTTPBasicAuth
-from singer_sdk.authenticators import BasicAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.pagination import BaseHATEOASPaginator  # noqa: TC002
 from singer_sdk.streams import RESTStream
 
-from tap_searchstax.get_token import username, password
 
 if t.TYPE_CHECKING:
     import requests
@@ -33,7 +29,7 @@ class SearchStaxStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        return "https://app.searchstax.com/api/rest/v2/account"
+        return "https://app.searchstax.com/api/rest/v2"
 
     @property
     def authenticator(self) -> SearchStaxAuthenticator:
@@ -89,7 +85,10 @@ class SearchStaxStream(RESTStream):
         """
         params: dict = {}
         if next_page_token:
-            params.update(parse_qsl(next_page_token.query))
+            if hasattr(next_page_token, "query"):
+                params.update(parse_qsl(next_page_token.query))
+            elif isinstance(next_page_token, str):
+                params.update(parse_qsl(next_page_token))
         if self.replication_key:
             params["sort"] = "asc"
             params["order_by"] = self.replication_key
@@ -110,26 +109,6 @@ class SearchStaxStream(RESTStream):
             self.records_jsonpath,
             input=response.json(parse_float=decimal.Decimal),
         )
-
-    def post_process(
-        self,
-        row: dict,
-        context: Context | None = None,  # noqa: ARG002
-    ) -> dict | None:
-        """As needed, append or transform raw data to match expected structure.
-
-        Note: As of SDK v0.47.0, this method is automatically executed for all stream types.
-        You should not need to call this method directly in custom `get_records` implementations.
-
-        Args:
-            row: An individual record from the stream.
-            context: The stream context.
-
-        Returns:
-            The updated record dictionary, or ``None`` to skip the record.
-        """
-        # TODO: Delete this method if not needed.
-        return row
 
 
 class SearchStaxHATEOASPaginator(BaseHATEOASPaginator):

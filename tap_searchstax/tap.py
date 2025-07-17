@@ -38,11 +38,17 @@ class TapSearchStax(Tap):
             description="The earliest record date to sync",
         ),
         th.Property(
-            "user_agent",
+            "year",
             th.StringType(nullable=True),
             description=(
-                "A custom User-Agent header to send with each request. Default is "
-                "'<tap_name>/<tap_version>'"
+                "year"
+            ),
+        ),
+        th.Property(
+            "month",
+            th.StringType(nullable=True),
+            description=(
+                "month"
             ),
         ),
     ).to_dict()
@@ -54,8 +60,8 @@ class TapSearchStax(Tap):
             A list of discovered streams.
         """
         return [
-            streams.GroupsStream(self),
             streams.AccountsStream(self),
+            streams.UsageStream(self)
         ]
 
 

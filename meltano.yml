@@ -10,7 +10,8 @@ plugins:
   extractors:
   - name: "tap-searchstax"
     namespace: "tap_searchstax"
-    pip_url: -e .
+    pip_url: .
+    executable: tap-searchstax
     capabilities:
     - state
     - catalog
@@ -20,8 +21,8 @@ plugins:
 
     # TODO: Declare settings and their types here:
     settings:
-    - name: username
-      label: Username
+    - name: user_name
+      label: User_name
       description: The username to use for authentication
 
     - name: password
@@ -34,6 +35,13 @@ plugins:
       kind: date_iso8601
       label: Start Date
       description: Initial date to start extracting data from
+    - name: year
+    - name: month
+
+
+    select:
+      - accounts.*
+      - usage.*
 
     # TODO: Declare required settings here:
     settings_group_validation:
