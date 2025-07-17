@@ -4,32 +4,17 @@
 
 Built with the [Meltano Tap SDK](https://sdk.meltano.com) for Singer Taps.
 
-<!--
-
-Developer TODO: Update the below as needed to correctly describe the install procedure. For instance, if you do not have a PyPI repo, or if you want users to directly install from your git repo, you can modify this step as appropriate.
-
-## Installation
-
-Install from PyPI:
-
-```bash
-pipx install tap-searchstax
-```
-
 Install from GitHub:
 
 ```bash
 pipx install git+https://github.com/ORG_NAME/tap-searchstax.git@main
 ```
 
--->
-
 ## Configuration
 
 ### Accepted Config Options
 
 <!--
-Developer TODO: Provide a list of config options accepted by the tap.
 
 This section can be created by copy-pasting the CLI output from:
 
@@ -37,6 +22,40 @@ This section can be created by copy-pasting the CLI output from:
 tap-searchstax --about --format=markdown
 ```
 -->
+## Capabilities
+
+* `catalog`
+* `state`
+* `discover`
+* `activate-version`
+* `about`
+* `stream-maps`
+* `schema-flattening`
+* `batch`
+
+## Settings
+
+| Setting | Required | Default | Description |
+|:--------|:--------:|:-------:|:------------|
+| user_name | True     | None    | The User Name to authenticate against the API service |
+| password | True     | None    | The Password to authenticate against the API service |
+| year | False    | None    | year        |
+| month | False    | None    | month       |
+| stream_maps | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
+| stream_map_config | False    | None    | User-defined config values to be used within map expressions. |
+| faker_config | False    | None    | Config for the [`Faker`](https://faker.readthedocs.io/en/master/) instance variable `fake` used within map expressions. Only applicable if the plugin specifies `faker` as an additional dependency (through the `singer-sdk` `faker` extra or directly). |
+| faker_config.seed | False    | None    | Value to seed the Faker generator for deterministic output: https://faker.readthedocs.io/en/master/#seeding-the-generator |
+| faker_config.locale | False    | None    | One or more LCID locale strings to produce localized output for: https://faker.readthedocs.io/en/master/#localization |
+| flattening_enabled | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
+| flattening_max_depth | False    | None    | The max depth to flatten schemas. |
+| batch_config | False    | None    | Configuration for BATCH message capabilities. |
+| batch_config.encoding | False    | None    | Specifies the format and compression of the batch files. |
+| batch_config.encoding.format | False    | None    | Format to use for batch files. |
+| batch_config.encoding.compression | False    | None    | Compression format to use for batch files. |
+| batch_config.storage | False    | None    | Defines the storage layer to use when writing batch files |
+| batch_config.storage.root | False    | None    | Root path to use when writing batch files. |
+| batch_config.storage.prefix | False    | None    | Prefix to use when writing batch files. |
+
 
 A full list of supported settings and capabilities for this
 tap is available by running:
@@ -53,9 +72,7 @@ environment variable is set either in the terminal context or in the `.env` file
 
 ### Source Authentication and Authorization
 
-<!--
-Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here.
--->
+For information on how to authenticate with SearchStax, please refer to the official documentation for the [SearchStax Authentication API](https://www.searchstax.com/docs/searchstax-cloud-authentication-api/).
 
 ## Usage
 

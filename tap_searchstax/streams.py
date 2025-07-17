@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import typing as t
+from singer_sdk.helpers.types import Context
 from singer_sdk import typing as th  # JSON Schema typing helpers
 from tap_searchstax.client import SearchStaxStream
 
@@ -43,7 +44,7 @@ class UsageStream(SearchStaxStream):
     path = "/account/{account_name}/usage-extended/{year}/{month}"
     primary_keys: t.ClassVar[list[str]] = ["account_name"]
     parent_stream_type = AccountsStream
-    records_jsonpath = "$"
+    records_jsonpath = "$.[*]"
     ignore_parent_replication_keys = True
     schema = th.PropertiesList(
        th.Property("account_name", th.StringType),
@@ -88,6 +89,6 @@ class UsageStream(SearchStaxStream):
         Returns:
             The updated record dictionary, or ``None`` to skip the record.
         """
-        row[0]["account_name"] = context.get("account_name")
-        return row[0]
+        row["account_name"] = context.get("account_name")
+        return row
 

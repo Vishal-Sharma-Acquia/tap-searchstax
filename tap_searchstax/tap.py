@@ -33,11 +33,6 @@ class TapSearchStax(Tap):
             description="The Password to authenticate against the API service",
         ),
         th.Property(
-            "start_date",
-            th.DateTimeType(nullable=True),
-            description="The earliest record date to sync",
-        ),
-        th.Property(
             "year",
             th.StringType(nullable=True),
             description=(
