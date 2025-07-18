@@ -38,9 +38,11 @@ class SearchStaxStream(RESTStream):
         Returns:
             An authenticator instance.
         """
+        username = self.config.get("user_name") or ""
+        password = self.config.get("password") or ""
         return SearchStaxAuthenticator.create_for_stream(self,
-                                                         self.config.get("user_name"),
-                                                         self.config.get("password"))
+                                                         username,
+                                                         password)
 
     @property
     def http_headers(self) -> dict:
@@ -67,7 +69,7 @@ class SearchStaxStream(RESTStream):
             A pagination helper instance, or ``None`` to indicate pagination
             is not supported.
         """
-        return super().get_new_paginator()
+        return SearchStaxHATEOASPaginator()
 
     def get_url_params(
         self,

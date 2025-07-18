@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import typing as t
+from singer_sdk.helpers import types
 from singer_sdk.helpers.types import Context
 from singer_sdk import typing as th  # JSON Schema typing helpers
 from tap_searchstax.client import SearchStaxStream
@@ -29,7 +30,11 @@ class AccountsStream(SearchStaxStream):
         th.Property("parent_name", th.StringType)
     ).to_dict()
 
-    def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
+    def get_child_context(
+            self,
+            record: types.Record,
+            context: types.Context | None,
+    ) -> types.Context | None:
         """Return a context dictionary for child streams."""
         return {
             "account_name": record.get("name"),
@@ -89,6 +94,8 @@ class UsageStream(SearchStaxStream):
         Returns:
             The updated record dictionary, or ``None`` to skip the record.
         """
-        row["account_name"] = context.get("account_name")
+        # Instead of direct access, use safe access
+        if context is not None:
+            row["account_name"] = context.get("account_name")
         return row
 

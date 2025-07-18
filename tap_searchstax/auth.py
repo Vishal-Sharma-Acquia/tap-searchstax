@@ -2,6 +2,7 @@ from __future__ import annotations
 import typing as t
 import requests
 from singer_sdk.authenticators import APIAuthenticatorBase
+
 if t.TYPE_CHECKING:
     from singer_sdk.streams.rest import _HTTPStream
 
@@ -45,11 +46,11 @@ class SearchStaxAuthenticator(APIAuthenticatorBase):
 
     @classmethod
     def create_for_stream(
-            cls: type[BasicAuthenticator],
+            cls: type[SearchStaxAuthenticator],
             stream: _HTTPStream,
             username: str,
             password: str,
-    ) -> BasicAuthenticator:
+    ) -> SearchStaxAuthenticator:
         """Create an Authenticator object specific to the Stream class.
 
         Args:
