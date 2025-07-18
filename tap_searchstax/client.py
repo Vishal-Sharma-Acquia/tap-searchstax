@@ -1,6 +1,9 @@
 """REST client handling, including SearchStaxStream base class."""
 
 from __future__ import annotations
+
+import logging
+
 from tap_searchstax.auth import SearchStaxAuthenticator
 from urllib.parse import parse_qsl
 import decimal
@@ -114,5 +117,14 @@ class SearchStaxStream(RESTStream):
 
 
 class SearchStaxHATEOASPaginator(BaseHATEOASPaginator):
+
+    # # Update this value if necessary or override `parse_response`.
+    # records_jsonpath = "$[*]"
+    #
+    # # Update this value if necessary or override `get_new_paginator`.
+    # next_page_token_jsonpath = "$.next_page"  # noqa: S105
     def get_next_url(self, response):
-        return response.json().get("next")
+        data = response.json()
+        if isinstance(data, dict):
+            return data.get("next")
+        return None
